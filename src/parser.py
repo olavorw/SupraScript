@@ -1,4 +1,4 @@
-from ast_nodes import AssignmentNode, PrintNode, BinaryOpNode, LoopNode
+from .ast_nodes import AssignmentNode, PrintNode, BinaryOpNode, LoopNode
 
 class Parser:
     def __init__(self, tokens):
