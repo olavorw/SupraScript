@@ -35,3 +35,19 @@ class LoopNode(ASTNode):
 
     def __repr__(self):
         return f"Loop({self.condition_var} {self.comp_op} {self.condition_value}, {self.body})"
+
+class VariableNode(ASTNode):
+    """Represents a variable in the AST."""
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return f"Variable({self.name})"
+
+class NumberNode(ASTNode):
+    """Represents a number in the AST."""
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return f"Number({self.value})"

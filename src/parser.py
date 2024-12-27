@@ -1,4 +1,5 @@
-from .ast_nodes import AssignmentNode, PrintNode, BinaryOpNode, LoopNode
+from .ast_nodes import AssignmentNode, PrintNode, BinaryOpNode, LoopNode, VariableNode
+
 
 class Parser:
     def __init__(self, tokens):
@@ -30,12 +31,22 @@ class Parser:
             raise SyntaxError(f"Unexpected token: {token}")
 
     def parse_assignment(self):
-        """Parse an assignment like 'let x = 42'."""
+        """Parse an assignment like 'let x = 42' or 'let x = y + 1'."""
         self.consume("IDENTIFIER")  # 'let'
         var_name = self.consume("IDENTIFIER")[1]  # Variable name
         self.consume("ASSIGN")  # '='
-        value = self.consume("NUMBER")[1]  # Value
-        return AssignmentNode(var_name, int(value))
+        value = self.parse_expression()  # Parse the right-hand side as an expression
+        return AssignmentNode(var_name, value)
+
+    def parse_value(self):
+        """Parse a single value (variable or number)."""
+        if self.match("NUMBER"):
+            return int(self.consume("NUMBER")[1])
+        elif self.match("IDENTIFIER"):
+            return VariableNode(self.consume("IDENTIFIER")[1])
+        else:
+            raise SyntaxError(f"Expected value, got {self.tokens[self.current]}")
+
 
     def parse_print(self):
         """Parse a print statement like 'print x + 5'."""
@@ -44,13 +55,26 @@ class Parser:
         return PrintNode(expr)
 
     def parse_expression(self):
-        """Parse expressions like 'x + 5'."""
-        left = self.consume("IDENTIFIER")[1]
+        """Parse expressions like 'x + 5' or just 'x'."""
+        left = self.parse_value()  # Parse the left-hand side
+
+        # Check for an operator
         if self.match("OP"):
             op = self.consume("OP")[1]
-            right = self.consume("NUMBER")[1]
-            return BinaryOpNode(left, op, int(right))
-        return left
+            right = self.parse_value()  # Parse the right-hand side
+            return BinaryOpNode(left, op, right)
+
+        return left  # Single value or variable
+
+    def consume_value(self):
+        """Consume either a NUMBER or an IDENTIFIER (variable)."""
+        if self.match("NUMBER"):
+            return int(self.consume("NUMBER")[1])  # Literal number
+        elif self.match("IDENTIFIER"):
+            return self.consume("IDENTIFIER")[1]  # Variable name
+        else:
+            raise SyntaxError(f"Expected a value (NUMBER or IDENTIFIER), got {self.tokens[self.current]}")
+
 
     def consume(self, expected_type):
         """Consume the next token if it matches the expected type."""
