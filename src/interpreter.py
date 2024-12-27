@@ -2,7 +2,7 @@ import sys
 import random
 from src.lexer import Lexer
 from src.parser import Parser
-from src.ast_nodes import AssignmentNode, PrintNode, BinaryOpNode, LoopNode, VariableNode, NumberNode
+from src.ast_nodes import AssignmentNode, PrintNode, BinaryOpNode, LoopNode, VariableNode, NumberNode, ASTNode
 
 # Random insults to roast the programmer
 INSULTS = [
@@ -41,24 +41,32 @@ class Interpreter:
                 for statement in node.body:
                     self.execute(statement)
 
-    def evaluate_condition(self, condition_node):
-        """Evaluate a loop condition."""
-        if isinstance(condition_node, BinaryOpNode):
-            left_value = self.evaluate(condition_node.left)
-            right_value = self.evaluate(condition_node.right)
-            if condition_node.operator == '<':
+    def evaluate_condition(self, loop_node):
+        """Evaluate a loop condition for a LoopNode."""
+        if isinstance(loop_node, LoopNode):
+            # Evaluate the left-hand side (condition_var)
+            left_value = self.evaluate(VariableNode(loop_node.condition_var))
+
+            # Evaluate the right-hand side (condition_value) if it's an ASTNode
+            right_value = (
+                self.evaluate(loop_node.condition_value)
+                if isinstance(loop_node.condition_value, ASTNode)
+                else loop_node.condition_value
+            )
+
+            # Perform the comparison
+            if loop_node.comp_op == '<':
                 return left_value < right_value
-            elif condition_node.operator == '>':
+            elif loop_node.comp_op == '>':
                 return left_value > right_value
-            elif condition_node.operator == '==':
+            elif loop_node.comp_op == '==':
                 return left_value == right_value
-            elif condition_node.operator == '!=':
+            elif loop_node.comp_op == '!=':
                 return left_value != right_value
             else:
-                raise ValueError(f"Unsupported comparison operator: {condition_node.operator}")
+                raise ValueError(f"Unsupported comparison operator: {loop_node.comp_op}")
         else:
-            raise TypeError(f"Unsupported condition node type: {type(condition_node)}")
-
+            raise TypeError(f"Unsupported condition node type: {type(loop_node)}")
 
     # noinspection PyMethodMayBeStatic
     def handle_error(self, message):
