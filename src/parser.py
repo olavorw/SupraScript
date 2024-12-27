@@ -36,6 +36,10 @@ class Parser:
         """Entry point for parsing a program."""
         nodes = []
         while self.current < len(self.tokens):
+            token = self.tokens[self.current]
+            if token[0] == "NEWLINE":  # Skip NEWLINE tokens
+                self.current += 1
+                continue
             node = self.parse_statement()
             nodes.append(node)
         return nodes

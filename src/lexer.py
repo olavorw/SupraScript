@@ -6,26 +6,26 @@ class Lexer:
         self.tokens = []
 
     def tokenize(self):
-        
+        # Define patterns for tokens (order matters: keywords before identifiers)
         token_spec = [
-            ('NUMBER', r'\d+'),           
-            ('ASSIGN', r'='),            
-            ('IDENTIFIER', r'[a-zA-Z_]\w*'),  
-            ('PRINT', r'print'),         
-            ('OP', r'[+\-*/]'),          
-            ('SKIP', r'[ \t]+'),         
-            ('NEWLINE', r'\n'),          
-            ('MISMATCH', r'.'),          
+            ('PRINT', r'print'),         # Print keyword
+            ('IDENTIFIER', r'[a-zA-Z_]\w*'),  # Variable names
+            ('ASSIGN', r'='),            # Assignment operator
+            ('NUMBER', r'\d+'),          # Integer or float
+            ('OP', r'[+\-*/]'),          # Arithmetic operators
+            ('SKIP', r'[ \t]+'),         # Skip spaces/tabs
+            ('NEWLINE', r'\n'),          # Line endings
+            ('MISMATCH', r'.'),          # Catch all other errors
         ]
 
-        
+        # Create the regex for tokenizing
         token_regex = '|'.join(f'(?P<{name}>{pattern})' for name, pattern in token_spec)
 
-        
+        # Match tokens line by line
         for match in re.finditer(token_regex, self.code):
             kind = match.lastgroup
             value = match.group()
-            if kind == 'SKIP':
+            if kind in ('SKIP', 'NEWLINE'):  # Skip spaces/tabs and newlines
                 continue
             elif kind == 'MISMATCH':
                 raise SyntaxError(f"Invalid character: {value}")
