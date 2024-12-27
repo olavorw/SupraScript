@@ -1,31 +1,4 @@
-class ASTNode:
-    """Base class for all AST nodes."""
-    pass
-
-class AssignmentNode(ASTNode):
-    def __init__(self, variable, value):
-        self.variable = variable
-        self.value = value
-
-    def __repr__(self):
-        return f"Assignment({self.variable}, {self.value})"
-
-class PrintNode(ASTNode):
-    def __init__(self, expression):
-        self.expression = expression
-
-    def __repr__(self):
-        return f"Print({self.expression})"
-
-class BinaryOpNode(ASTNode):
-    def __init__(self, left, operator, right):
-        self.left = left
-        self.operator = operator
-        self.right = right
-
-    def __repr__(self):
-        return f"BinaryOp({self.left}, {self.operator}, {self.right})"
-
+from ast_nodes import AssignmentNode, PrintNode, BinaryOpNode, LoopNode
 
 class Parser:
     def __init__(self, tokens):
@@ -88,3 +61,18 @@ class Parser:
     def match(self, expected_type):
         """Check if the next token matches the expected type."""
         return self.current < len(self.tokens) and self.tokens[self.current][0] == expected_type
+
+    def parse_loop(self):
+        """Parse a loop like 'loop x < 5:'."""
+        self.consume("IDENTIFIER")  # 'loop'
+        condition = self.consume("IDENTIFIER")[1]  # Variable name
+        operator = self.consume("OP")[1]  # Comparison operator (e.g., '<')
+        value = self.consume("NUMBER")[1]  # Comparison value
+        self.consume("IDENTIFIER")  # Consume the ':'
+
+        # Parse the body of the loop (statements indented below the loop)
+        body = []
+        while self.current < len(self.tokens) and self.tokens[self.current][0] != "NEWLINE":
+            body.append(self.parse_statement())
+
+        return LoopNode(condition, operator, int(value), body)
