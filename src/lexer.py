@@ -13,10 +13,14 @@ class Lexer:
             ('ASSIGN', r'='),            # Assignment operator
             ('NUMBER', r'\d+'),          # Integer or float
             ('OP', r'[+\-*/]'),          # Arithmetic operators
+            ('COMP_OP', r'[<>!=]=?|=='), # Comparison operators (<, >, <=, >=, ==, !=)
+            ('COLON', r':'),             # Colon (used for loops and conditionals)
             ('SKIP', r'[ \t]+'),         # Skip spaces/tabs
             ('NEWLINE', r'\n'),          # Line endings
             ('MISMATCH', r'.'),          # Catch all other errors
         ]
+
+
 
         # Create the regex for tokenizing
         token_regex = '|'.join(f'(?P<{name}>{pattern})' for name, pattern in token_spec)

@@ -1,13 +1,20 @@
 from src.lexer import Lexer
 
 code = """
-let x = 42
-print x + 5
+let x = 5
+loop x < 10:
+    print x
+    let x = x + 1
 """
 
 lexer = Lexer(code)
 tokens = lexer.tokenize()
-print(tokens)
+print("Tokens:", tokens)
 
 # Output:
-# [('IDENTIFIER', 'let'), ('IDENTIFIER', 'x'), ('ASSIGN', '='), ('NUMBER', '42'), ('PRINT', 'print'), ('IDENTIFIER', 'x'), ('OP', '+'), ('NUMBER', '5')]
+# Tokens: [('IDENTIFIER', 'let'), ('IDENTIFIER', 'x'), ('ASSIGN', '='),
+#          ('NUMBER', '5'), ('IDENTIFIER', 'loop'), ('IDENTIFIER', 'x'),
+#          ('COMP_OP', '<'), ('NUMBER', '10'), ('NEWLINE', '\n'),
+#          ('PRINT', 'print'), ('IDENTIFIER', 'x'), ('NEWLINE', '\n'),
+#          ('IDENTIFIER', 'let'), ('IDENTIFIER', 'x'), ('ASSIGN', '='),
+#          ('IDENTIFIER', 'x'), ('OP', '+'), ('NUMBER', '1'), ('NEWLINE', '\n')]

@@ -24,6 +24,8 @@ class Parser:
             return self.parse_assignment()
         elif token[0] == "PRINT":
             return self.parse_print()
+        elif token[0] == "IDENTIFIER" and token[1] == "loop":
+            return self.parse_loop()
         else:
             raise SyntaxError(f"Unexpected token: {token}")
 
@@ -63,16 +65,17 @@ class Parser:
         return self.current < len(self.tokens) and self.tokens[self.current][0] == expected_type
 
     def parse_loop(self):
-        """Parse a loop like 'loop x < 5:'."""
+        """Parse a loop like 'loop x < 10:'."""
         self.consume("IDENTIFIER")  # 'loop'
-        condition = self.consume("IDENTIFIER")[1]  # Variable name
-        operator = self.consume("OP")[1]  # Comparison operator (e.g., '<')
-        value = self.consume("NUMBER")[1]  # Comparison value
-        self.consume("IDENTIFIER")  # Consume the ':'
+        condition_var = self.consume("IDENTIFIER")[1]  # Variable name
+        comp_op = self.consume("COMP_OP")[1]  # Comparison operator (e.g., <)
+        condition_value = self.consume("NUMBER")[1]  # Comparison value
+        self.consume("COLON")  # The colon after the condition
 
-        # Parse the body of the loop (statements indented below the loop)
+        # Parse the body of the loop (statements indented under the loop)
         body = []
         while self.current < len(self.tokens) and self.tokens[self.current][0] != "NEWLINE":
             body.append(self.parse_statement())
 
-        return LoopNode(condition, operator, int(value), body)
+        return LoopNode(condition_var, comp_op, int(condition_value), body)
+

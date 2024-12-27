@@ -27,11 +27,11 @@ class BinaryOpNode(ASTNode):
         return f"BinaryOp({self.left}, {self.operator}, {self.right})"
 
 class LoopNode(ASTNode):
-    def __init__(self, condition, operator, value, body):
-        self.condition = condition
-        self.operator = operator
-        self.value = value
+    def __init__(self, condition_var, comp_op, condition_value, body):
+        self.condition_var = condition_var
+        self.comp_op = comp_op
+        self.condition_value = condition_value
         self.body = body
 
     def __repr__(self):
-        return f"Loop({self.condition} {self.operator} {self.value}, {self.body})"
+        return f"Loop({self.condition_var} {self.comp_op} {self.condition_value}, {self.body})"
