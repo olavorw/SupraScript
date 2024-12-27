@@ -43,18 +43,21 @@ class Interpreter:
 
     def evaluate_condition(self, condition_node):
         """Evaluate a loop condition."""
-        left_value = self.evaluate(condition_node.left)
-        right_value = self.evaluate(condition_node.right)
-        if condition_node.operator == '<':
-            return left_value < right_value
-        elif condition_node.operator == '>':
-            return left_value > right_value
-        elif condition_node.operator == '==':
-            return left_value == right_value
-        elif condition_node.operator == '!=':
-            return left_value != right_value
+        if isinstance(condition_node, BinaryOpNode):
+            left_value = self.evaluate(condition_node.left)
+            right_value = self.evaluate(condition_node.right)
+            if condition_node.operator == '<':
+                return left_value < right_value
+            elif condition_node.operator == '>':
+                return left_value > right_value
+            elif condition_node.operator == '==':
+                return left_value == right_value
+            elif condition_node.operator == '!=':
+                return left_value != right_value
+            else:
+                raise ValueError(f"Unsupported comparison operator: {condition_node.operator}")
         else:
-            raise ValueError(f"Unsupported comparison operator: {condition_node.operator}")
+            raise TypeError(f"Unsupported condition node type: {type(condition_node)}")
 
 
     # noinspection PyMethodMayBeStatic
@@ -82,10 +85,19 @@ class Interpreter:
             return self.get_variable_value(node.name)
         elif isinstance(node, NumberNode):
             return node.value
+        elif isinstance(node, int):  # Handle raw integers
+            return node
         else:
             raise TypeError(f"Unsupported node type: {type(node)}")
 
 
+
+    def get_variable_value(self, name):
+        """Retrieve the value of a variable by name."""
+        if name in self.variables:
+            return self.variables[name]
+        else:
+            self.handle_error(f"Variable '{name}' is not defined.")
 
     def get_value(self, operand):
         """Get the value of a variable or literal."""
