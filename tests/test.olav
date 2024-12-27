@@ -1,2 +1,6 @@
 let x = 10
 print x + 20
+let x = 5
+loop x < 10:
+    print x
+    let x = x + 1
